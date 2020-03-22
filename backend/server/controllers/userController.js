@@ -47,9 +47,9 @@ exports.signup = async (req, res, next) => {
     const { role, email, password } = req.body;
     const user = await User.findOne({ email });
     if (user)
-      return next(
-        new Error("Email already exists! Did you forget your password?")
-      );
+      return res.status(403).json({
+        error: "Email already registered. Please login!"
+      });
     const hashedPassword = await hashPassword(password);
     const newUser = new User({
       email,
@@ -76,6 +76,7 @@ exports.signup = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) return next(new Error("Email does not exist"));
@@ -86,7 +87,7 @@ exports.login = async (req, res, next) => {
     });
     await User.findByIdAndUpdate(user._id, { accessToken });
     res.status(200).json({
-      data: { email: user.email, role: user.role },
+      data: { email: user.email, role: user.role, id: user._id },
       accessToken
     });
   } catch (error) {

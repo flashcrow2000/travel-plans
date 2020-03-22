@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const path = require("path");
+var cors = require("cors");
 const User = require("./models/userModel");
 const routes = require("./routes/route.js");
 require("dotenv").config({
@@ -10,6 +11,8 @@ require("dotenv").config({
 });
 
 const app = express();
+
+app.use(cors());
 
 const PORT = process.env.PORT || 7000;
 
