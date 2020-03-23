@@ -50,6 +50,7 @@ exports.signup = async (req, res, next) => {
       return res.status(403).json({
         error: "Email already registered. Please login!"
       });
+    console.log("Signup: Before hash");
     const hashedPassword = await hashPassword(password);
     const newUser = new User({
       email,
@@ -98,7 +99,7 @@ exports.login = async (req, res, next) => {
 exports.getUsers = async (req, res, next) => {
   const users = await User.find({});
   res.status(200).json({
-    data: users
+    users
   });
 };
 
@@ -108,7 +109,7 @@ exports.getUser = async (req, res, next) => {
     const user = await User.findById(userId);
     if (!user) return next(new Error("User does not exist"));
     res.status(200).json({
-      data: user
+      user
     });
   } catch (error) {
     next(error);
@@ -117,12 +118,56 @@ exports.getUser = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
   try {
-    const { role } = req.body;
-    const userId = req.params.userId;
-    await User.findByIdAndUpdate(userId, { role });
-    const user = await User.findById(userId);
+    const user = res.locals.loggedInUser;
+    const updateUserId = req.params.userId;
+    let updatePaylod = {};
+    if (user._id.toString() === updateUserId) {
+      if (
+        user.role === "basic" &&
+        req.body.newPassword &&
+        req.body.oldPassword
+      ) {
+        const userBeforeUpdate = await User.findById(updateUserId);
+        const validPassword = await validatePassword(
+          req.body.oldPassword,
+          userBeforeUpdate.password
+        );
+        if (!validPassword)
+          return res.status(401).json({
+            error: "Old password doesn't match"
+          });
+
+        console.log("before hash:", req.body.newPassword);
+        const hashedPassword = await hashPassword(req.body.newPassword);
+        updatePaylod = { password: hashedPassword };
+      } else {
+        return res.status(401).json({
+          error: "You don't have enough permission to perform this action"
+        });
+      }
+    } else {
+      if (user.role === "admin" || user.role === "supervisor") {
+        updatePaylod = { ...req.body };
+        if (req.body.password) {
+          const hashedPassword = await hashPassword(req.body.password);
+          updatePaylod.password = hashedPassword;
+        }
+      } else {
+        return res.status(401).json({
+          error: "You don't have enough permission to perform this action"
+        });
+      }
+    }
+
+    await User.findByIdAndUpdate(updateUserId, { $set: updatePaylod });
+    const updatedUser = await User.findById(updateUserId);
+    if (!updatedUser) {
+      return res.status(404).json({
+        error: "User doesn't exist"
+      });
+    }
     res.status(200).json({
-      data: user
+      data: updatedUser
     });
   } catch (error) {
     next(error);
@@ -131,12 +176,26 @@ exports.updateUser = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   try {
-    const userId = req.params.userId;
-    await User.findByIdAndDelete(userId);
-    res.status(200).json({
-      data: null,
-      message: "User has been deleted"
-    });
+    const user = res.locals.loggedInUser;
+    const deleteUserId = req.params.userId;
+    console.log(user._id.toString());
+    console.log(deleteUserId);
+    console.log(user.role);
+    if (
+      user._id.toString() === deleteUserId ||
+      user.role === "admin" ||
+      user.role === "supervisor"
+    ) {
+      await User.findByIdAndDelete(deleteUserId);
+      res.status(200).json({
+        data: null,
+        message: "User has been deleted"
+      });
+    } else {
+      res.status(401).json({
+        error: "You don't have enough permission to perform this action"
+      });
+    }
   } catch (error) {
     next(error);
   }

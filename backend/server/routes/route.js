@@ -9,7 +9,7 @@ router.post("/signup", userController.signup);
 router.post("/login", userController.login);
 
 router.get(
-  "/user/:userId",
+  "/users/:userId",
   userController.allowIfLoggedin,
   userController.getUser
 );
@@ -20,38 +20,51 @@ router.get(
   userController.grantAccess("readAny", "profile"),
   userController.getUsers
 );
-
+// update own profile
 router.put(
-  "/user/:userId",
+  "/users/:userId",
   userController.allowIfLoggedin,
-  userController.grantAccess("updateAny", "profile"),
   userController.updateUser
 );
 
 router.delete(
-  "/user/:userId",
+  "/users/:userId",
   userController.allowIfLoggedin,
-  userController.grantAccess("deleteAny", "profile"),
   userController.deleteUser
 );
 
 // trips routes
 router.get(
-  "/user/:userId/trips",
+  "/users/:userId/trips",
   tripController.allowIfLoggedin,
   tripController.getAllTripsForUser
 );
 
 router.post(
-  "/user/:userId/trips",
+  "/users/:userId/trips",
   tripController.allowIfLoggedin,
   tripController.addTripForUser
 );
 
 router.get(
-  "/user/:userId/trips/:tripId",
+  "/users/:userId/trips/:tripId",
   tripController.allowIfLoggedin,
+  tripController.validateAction,
   tripController.getTripForUser
+);
+
+router.put(
+  "/users/:userId/trips/:tripId",
+  tripController.allowIfLoggedin,
+  tripController.validateAction,
+  tripController.editTripForUser
+);
+
+router.delete(
+  "/users/:userId/trips/:tripId",
+  tripController.allowIfLoggedin,
+  tripController.validateAction,
+  tripController.deleteTripForUser
 );
 
 module.exports = router;

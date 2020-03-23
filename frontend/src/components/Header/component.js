@@ -6,13 +6,12 @@ import { useHistory } from "react-router-dom";
 
 export function Header() {
   const user = useSelector(selectUser);
-  console.log(user);
   const userIdFromLocalStorage = localStorage.getItem("userId");
   const dispatch = useDispatch();
   const history = useHistory();
 
   const loggedInContent = (
-    <ul className="nav navbar-nav pull-xs-right">
+    <ul className="nav pull-xs-right">
       <li className="nav-item">
         <Link to="/Dashboard" className="nav-link">
           Dashboard
@@ -42,7 +41,10 @@ export function Header() {
       </li>
 
       <li className="nav-item">
-        <button
+        <Link to="/profile" className="nav-link">
+          Profile
+        </Link>
+        {/* <button
           onClick={() => {
             console.log("logout");
             dispatch(logoutUser());
@@ -52,13 +54,13 @@ export function Header() {
           className="nav-link"
         >
           Log out
-        </button>
+        </button> */}
       </li>
     </ul>
   );
 
   const loggedOutContent = (
-    <ul className="nav navbar-nav pull-xs-right">
+    <ul className="nav pull-xs-right">
       <li className="nav-item">
         <Link to="/login" className="nav-link">
           Log in
@@ -75,10 +77,8 @@ export function Header() {
 
   return (
     <nav className="navbar navbar-light">
-      <div className="container">
-        {user.loggedIn || userIdFromLocalStorage
-          ? loggedInContent
-          : loggedOutContent}
+      <div className="container" style={{ flexDirection: "row-reverse" }}>
+        {user.loggedIn ? loggedInContent : loggedOutContent}
       </div>
     </nav>
   );

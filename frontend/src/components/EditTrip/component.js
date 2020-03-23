@@ -1,20 +1,15 @@
 import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-import styles from "./styles.module.css";
 import API from "../../api/api";
 import qs from "qs";
-import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../reducers/userSlice";
-import { useHistory } from "react-router-dom";
+import DatePicker from "react-datepicker";
 
-export default function NewTrip() {
-  const user = useSelector(selectUser);
-  const [destination, setDestination] = useState("");
-  const [comment, setComment] = useState("");
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const history = useHistory();
+export default function EditTrip(props) {
+  const [destination, setDestination] = useState(props.trip.destination);
+  const [comment, setComment] = useState(props.trip.comment);
+  const [startDate, setStartDate] = useState(new Date(props.trip.startDate));
+  const [endDate, setEndDate] = useState(new Date(props.trip.endDate));
   function submitForm(ev) {
     ev.preventDefault();
     const requestBody = { destination, startDate, endDate, comment };
@@ -23,16 +18,17 @@ export default function NewTrip() {
         "x-access-token": localStorage.getItem("accessToken")
       }
     };
-    API.post(
-      `users/${user.profile.id}/trips`,
+    API.put(
+      `users/${props.user.profile.id}/trips/${props.trip._id}`,
       qs.stringify(requestBody),
       config
     )
-      .then(() => {
-        history.push("/dashboard");
+      .then(res => {
+        props.refresh();
+        props.onClose();
       })
       .catch(err => {
-        console.log("trip add failed");
+        console.log("trip save failed");
       });
   }
   function validateForm() {
@@ -42,7 +38,7 @@ export default function NewTrip() {
   }
   return (
     <>
-      <div className={styles.container}>
+      <div>
         <form onSubmit={submitForm}>
           <fieldset>
             <fieldset className="form-group">
@@ -87,7 +83,7 @@ export default function NewTrip() {
               type="submit"
               disabled={!validateForm()}
             >
-              Add trip
+              Save trip
             </button>
           </fieldset>
         </form>

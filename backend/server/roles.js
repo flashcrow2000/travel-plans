@@ -12,13 +12,15 @@ exports.roles = (function() {
   ac.grant("supervisor")
     .extend("basic")
     .readAny("profile")
-    .readAny("entries");
+    .updateAny("profile")
+    .deleteAny("profile");
 
   ac.grant("admin")
     .extend("basic")
     .extend("supervisor")
-    .updateAny("profile")
-    .deleteAny("profile");
+    .updateAny("entries")
+    .deleteAny("entries")
+    .readAny("entries");
 
   return ac;
 })();
