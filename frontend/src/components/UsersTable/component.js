@@ -21,25 +21,28 @@ endDate: "2020-06-22T00:00:00.000Z"
 comment: "bla bla"
           */
               return (
-                <tr key={user._id}>
-                  <td data-title="Email">{user.email}</td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => props.onUserDetails(user._id)}
-                    >
-                      Edit
-                    </button>
-                    {props.role === "admin" && (
+                user._id !== props.owner.id && (
+                  <tr key={user._id}>
+                    <td data-title="Email">{user.email}</td>
+                    <td>
                       <button
                         className="btn btn-primary"
-                        onClick={() => props.onManageUserTrips(user._id)}
+                        onClick={() => props.onUserDetails(user._id)}
                       >
-                        Manage trips
+                        Edit
                       </button>
-                    )}
-                  </td>
-                </tr>
+                      {props.owner.role === "admin" && (
+                        <button
+                          className="btn btn-primary"
+                          style={{ marginLeft: "8px" }}
+                          onClick={() => props.onManageUserTrips(user._id)}
+                        >
+                          Manage trips
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                )
               );
             })}
           </tbody>

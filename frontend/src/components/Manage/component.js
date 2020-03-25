@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { selectCurrentUser } from "../../reducers/manageSlice";
 import { useSelector, useDispatch } from "react-redux";
 import API from "../../api/api";
@@ -8,11 +9,14 @@ import TripsTable from "../TripsTable/component";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import EditTrip from "../EditTrip/component";
+import { selectUser } from "../../reducers/userSlice";
 
 export default function Manage() {
+  const user = useSelector(selectUser);
   const selectedUser = useSelector(selectCurrentUser);
   const trips = useSelector(selectFilteredTrips);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [showEditTrip, setShowEditTrip] = useState(false);
   const handleCloseEditTrip = () => setShowEditTrip(false);
   const handleShowEditTrip = () => setShowEditTrip(true);
@@ -58,53 +62,71 @@ export default function Manage() {
       dispatch(filteredTrips(res.data.trips));
     });
   }
+  function addTripForSelectedUser() {
+    history.push("/new-trip");
+  }
   useEffect(() => {
-    loadTrips();
+    console.log(user, selectedUser);
+    if (!user.loggedIn || !selectedUser) {
+      history.push("/login");
+    } else if (user.profile.role !== "admin") {
+      history.push("/dashboard");
+    } else loadTrips();
   }, []);
   return (
-    <>
-      <Modal
-        show={showEditTrip}
-        onHide={handleCloseEditTrip}
-        style={{ opacity: 1 }}
-      >
-        <Modal.Body>
-          <EditTrip
-            user={selectedUser}
-            trip={selectedTrip}
-            onClose={handleCloseEditTrip}
-            refresh={loadTrips}
-          />
-        </Modal.Body>
-      </Modal>
-      <Modal
-        show={showDeleteTrip}
-        onHide={handleCloseDeleteTrip}
-        style={{ opacity: 1 }}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Are you sure you want to remove this trip?</Modal.Title>
-        </Modal.Header>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseDeleteTrip}>
-            Close
-          </Button>
-          <Button
-            variant="danger"
-            onClick={() => {
-              onDeleteTrip();
-              handleCloseDeleteTrip();
-            }}
-          >
-            Remve trip
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <TripsTable
-        trips={trips}
-        onEditTrip={onEditTrip}
-        onDeleteTrip={onDeletePopup}
-      />
-    </>
+    user.loggedIn &&
+    selectedUser && (
+      <>
+        <Modal
+          show={showEditTrip}
+          onHide={handleCloseEditTrip}
+          style={{ opacity: 1 }}
+        >
+          <Modal.Body>
+            <EditTrip
+              user={selectedUser}
+              trip={selectedTrip}
+              onClose={handleCloseEditTrip}
+              refresh={loadTrips}
+            />
+          </Modal.Body>
+        </Modal>
+        <Modal
+          show={showDeleteTrip}
+          onHide={handleCloseDeleteTrip}
+          style={{ opacity: 1 }}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              Are you sure you want to remove this trip?
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseDeleteTrip}>
+              Close
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => {
+                onDeleteTrip();
+                handleCloseDeleteTrip();
+              }}
+            >
+              Remve trip
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <TripsTable
+          trips={trips}
+          onEditTrip={onEditTrip}
+          onDeleteTrip={onDeletePopup}
+        />
+        <div>
+          <button className="btn btn-primary" onClick={addTripForSelectedUser}>
+            Add trip
+          </button>
+        </div>
+      </>
+    )
   );
 }

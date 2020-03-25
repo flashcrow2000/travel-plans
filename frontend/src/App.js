@@ -5,17 +5,18 @@ import { Login } from "./components/Login/component";
 import { Signup } from "./components/Signup/component";
 import { useSelector } from "react-redux";
 import { selectUser } from "./reducers/userSlice";
-import AllTrips from "./components/AllTrips/component";
-import Users from "./components/Users/component";
 import Dashboard from "./components/Dashboard/component";
 import NewTrip from "./components/NewTrip/component";
 import Profile from "./components/Profile/component";
 import Manage from "./components/Manage/component";
+import NoMatch from "./components/NoMatch/component";
 
 function App() {
   const user = useSelector(selectUser);
   const accessToken = user.loggedIn && localStorage.getItem("accessToken");
-  const userLoggedIn = user.loggedIn || accessToken;
+  const userLoggedIn = user.loggedIn; // || accessToken;
+  const ProtectedRoute = ({ isAllowed, ...props }) =>
+    isAllowed ? <Route {...props} /> : <Redirect to="/login" />;
   return (
     <div className="App">
       <Header />
@@ -30,13 +31,31 @@ function App() {
         </Route>
         <Route path="/login" exact component={Login} />
         <Route path="/signup" exact component={Signup} />
-        <Route path="/all-trips" exact component={AllTrips} />
-        <Route path="/users" exact component={Users} />
-        <Route path="/dashboard" exact component={Dashboard} />
-        <Route path="/new-trip" exact component={NewTrip} />
-        <Route path="/profile" exact component={Profile} />
-        <Route path="/manage" exact component={Manage} />
-        {/* TODO add 404 page */}
+        <ProtectedRoute
+          isAllowed={userLoggedIn}
+          path="/dashboard"
+          exact
+          component={Dashboard}
+        />
+        <ProtectedRoute
+          isAllowed={userLoggedIn}
+          path="/new-trip"
+          exact
+          component={NewTrip}
+        />
+        <ProtectedRoute
+          isAllowed={userLoggedIn}
+          path="/profile"
+          exact
+          component={Profile}
+        />
+        <ProtectedRoute
+          isAllowed={userLoggedIn}
+          path="/manage"
+          exact
+          component={Manage}
+        />
+        <Route component={NoMatch} />
       </Switch>
     </div>
   );

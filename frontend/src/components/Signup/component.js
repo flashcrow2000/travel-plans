@@ -2,13 +2,27 @@ import { Link, useHistory } from "react-router-dom";
 import API from "../../api/api";
 import React, { useState } from "react";
 import qs from "qs";
+import { useSelector, useDispatch } from "react-redux";
+import { selectUser } from "../../reducers/userSlice";
+import { loadUsers } from "../../reducers/manageSlice";
 
 export const Signup = () => {
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const history = useHistory();
-
+  function loadUserList() {
+    let config = {
+      headers: {
+        "x-access-token": localStorage.getItem("accessToken")
+      }
+    };
+    API.get("users", config).then(res => {
+      dispatch(loadUsers(res.data.users));
+    });
+  }
   function submitForm(ev) {
     ev.preventDefault();
     const requestBody = { email, password };
@@ -16,7 +30,10 @@ export const Signup = () => {
       .then(res => {
         console.log(res);
         if (res.status === 200) {
-          history.push("/login");
+          if (user.loggedIn) {
+            history.push("/dashboard");
+            loadUserList();
+          } else history.push("/login");
         }
       })
       .catch(error => {
@@ -43,10 +60,18 @@ export const Signup = () => {
       <div className="container page">
         <div className="row">
           <div className="col-md-6 offset-md-3 col-xs-12">
-            <h1 className="text-xs-center">Sign Up</h1>
-            <p className="text-xs-center">
-              <Link to="/login">Have an account?</Link>
-            </p>
+            {user.loggedIn ? (
+              <>
+                <h1 className="text-xs-center">Add a new user</h1>
+              </>
+            ) : (
+              <>
+                <h1 className="text-xs-center">Sign Up</h1>
+                <p className="text-xs-center">
+                  <Link to="/login">Have an account?</Link>
+                </p>
+              </>
+            )}
 
             <form onSubmit={submitForm}>
               <fieldset>

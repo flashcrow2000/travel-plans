@@ -3,12 +3,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectUser, logoutUser } from "../../reducers/userSlice";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import { setCurrentUser } from "../../reducers/manageSlice";
 
 export function Header() {
   const user = useSelector(selectUser);
   const userIdFromLocalStorage = localStorage.getItem("userId");
   const dispatch = useDispatch();
   const history = useHistory();
+  function cleanupSelectedUser() {
+    dispatch(setCurrentUser(null));
+  }
 
   const loggedInContent = (
     <ul className="nav pull-xs-right">
@@ -18,24 +22,8 @@ export function Header() {
         </Link>
       </li>
 
-      {user.profile?.role !== "basic" && (
-        <li className="nav-item">
-          <Link to="/users" className="nav-link">
-            Manage users
-          </Link>
-        </li>
-      )}
-
-      {user.profile?.role === "admin" && (
-        <li className="nav-item">
-          <Link to="/all-trips" className="nav-link">
-            Manage trips
-          </Link>
-        </li>
-      )}
-
       <li className="nav-item">
-        <Link to="/new-trip" className="nav-link">
+        <Link to="/new-trip" className="nav-link" onClick={cleanupSelectedUser}>
           New trip
         </Link>
       </li>
@@ -44,17 +32,6 @@ export function Header() {
         <Link to="/profile" className="nav-link">
           Profile
         </Link>
-        {/* <button
-          onClick={() => {
-            console.log("logout");
-            dispatch(logoutUser());
-            console.log("redirect to /");
-            history.push("/");
-          }}
-          className="nav-link"
-        >
-          Log out
-        </button> */}
       </li>
     </ul>
   );

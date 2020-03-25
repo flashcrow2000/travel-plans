@@ -58,6 +58,7 @@ export default function EditTrip(props) {
               selected={startDate}
               onChange={date => {
                 setStartDate(date);
+                setEndDate(date);
               }}
             />
             <br />

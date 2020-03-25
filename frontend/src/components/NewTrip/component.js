@@ -7,9 +7,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../reducers/userSlice";
 import { useHistory } from "react-router-dom";
+import { selectCurrentUser } from "../../reducers/manageSlice";
 
 export default function NewTrip() {
   const user = useSelector(selectUser);
+  const selectedUser = useSelector(selectCurrentUser);
   const [destination, setDestination] = useState("");
   const [comment, setComment] = useState("");
   const [startDate, setStartDate] = useState(new Date());
@@ -24,7 +26,7 @@ export default function NewTrip() {
       }
     };
     API.post(
-      `users/${user.profile.id}/trips`,
+      `users/${selectedUser?._id ?? user.profile.id}/trips`,
       qs.stringify(requestBody),
       config
     )
@@ -43,6 +45,11 @@ export default function NewTrip() {
   return (
     <>
       <div className={styles.container}>
+        {selectedUser ? (
+          <h2>Add a trip for ${selectedUser.email}</h2>
+        ) : (
+          <h2>Where do you want to go?</h2>
+        )}
         <form onSubmit={submitForm}>
           <fieldset>
             <fieldset className="form-group">
