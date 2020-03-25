@@ -30,13 +30,14 @@ comment: "bla bla"
                     >
                       Edit
                     </button>
-                    <button
-                      style={{ marginLeft: "8px" }}
-                      className="btn btn-danger"
-                      onClick={() => props.onDeleteUser(user._id)}
-                    >
-                      Delete
-                    </button>
+                    {props.role === "admin" && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => props.onManageUserTrips(user._id)}
+                      >
+                        Manage trips
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

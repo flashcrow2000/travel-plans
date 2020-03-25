@@ -9,7 +9,7 @@ export const slice = createSlice({
       state.list = [...action.payload];
       state.filteredList = [...action.payload];
     },
-    filteredTripsByDate: (state, action) => {
+    filteredTrips: (state, action) => {
       state.loaded = true;
       state.filteredList = [...action.payload];
     },
@@ -21,11 +21,7 @@ export const slice = createSlice({
   }
 });
 
-export const {
-  tripsFromUser,
-  logoutTrips,
-  filteredTripsByDate
-} = slice.actions;
+export const { tripsFromUser, logoutTrips, filteredTrips } = slice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

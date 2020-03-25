@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "../../api/api";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../reducers/userSlice";
-import { filteredTripsByDate } from "../../reducers/tripsSlice";
+import { filteredTrips } from "../../reducers/tripsSlice";
 import { useHistory } from "react-router-dom";
 import {
   tripsFromUser,
@@ -14,11 +14,15 @@ import UsersTable from "../UsersTable/component";
 import {
   selectManagerState,
   loadUsers,
-  selectUsers
+  selectUsers,
+  setCurrentUser
 } from "../../reducers/manageSlice";
 import EditTrip from "../EditTrip/component";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import styles from "./styles.module.css";
+import EditProfile from "../EditProfIle/component";
+import qs from "qs";
 
 export default function Dashboard() {
   const user = useSelector(selectUser);
@@ -28,19 +32,18 @@ export default function Dashboard() {
   const userList = useSelector(selectUsers);
   const history = useHistory();
   const dispatch = useDispatch();
-  const [daysFilter, setDaysFilter] = useState(0);
+  const [daysFilter, setDaysFilter] = useState("");
   const [selectedTrip, setSelectedTrip] = useState(undefined);
-  const [showEdit, setShowEdit] = useState(false);
-  const handleCloseEdit = () => setShowEdit(false);
-  const handleShowEdit = () => setShowEdit(true);
-  const [showDelete, setShowDelete] = useState(false);
-  const handleCloseDelete = () => setShowDelete(false);
-  const handleShowDelete = () => setShowDelete(true);
-  useEffect(() => {
-    if (daysFilter) {
-      filterTripsByDate();
-    }
-  }, [daysFilter]);
+  const [showEditTrip, setShowEditTrip] = useState(false);
+  const handleCloseEditTrip = () => setShowEditTrip(false);
+  const handleShowEditTrip = () => setShowEditTrip(true);
+  const [showDeleteTrip, setShowDeleteTrip] = useState(false);
+  const handleCloseDeleteTrip = () => setShowDeleteTrip(false);
+  const handleShowDeleteTrip = () => setShowDeleteTrip(true);
+  const [selectedUser, setSelectedUser] = useState(undefined);
+  const [showEditUser, setShowEditUser] = useState(false);
+  const handleCloseEditUser = () => setShowEditUser(false);
+  const handleShowEditUser = () => setShowEditUser(true);
   function loadTrips() {
     let config = {
       headers: {
@@ -51,29 +54,41 @@ export default function Dashboard() {
       dispatch(tripsFromUser(res.data.trips));
     });
   }
+  function loadUserList() {
+    let config = {
+      headers: {
+        "x-access-token": localStorage.getItem("accessToken")
+      }
+    };
+    API.get("users", config).then(res => {
+      console.log("users loaded", res.data.users);
+      dispatch(loadUsers(res.data.users));
+    });
+  }
+  useEffect(() => {
+    if (daysFilter) {
+      filterTripsByDate();
+    }
+  }, [daysFilter]);
+
   function filterTripsByDate() {
-    if (daysFilter !== 0) {
+    console.log(daysFilter);
+    if (!isNaN(daysFilter) && daysFilter > 0) {
       const date = new Date();
-      date.setDate(date.getDate() + daysFilter);
+      console.log("initial date:", date);
+      date.setDate(date.getDate() + parseInt(daysFilter));
+      console.log("target date:", date);
       const filteredList = trips.list.filter(
         trip => new Date(trip.startDate) < date
       );
-      dispatch(filteredTripsByDate(filteredList));
+      dispatch(filteredTrips(filteredList));
     }
   }
   useEffect(() => {
     if (user.loggedIn) {
       loadTrips();
       if (user.profile.role !== "basic" && !managerState.userListLoaded) {
-        let config = {
-          headers: {
-            "x-access-token": localStorage.getItem("accessToken")
-          }
-        };
-        API.get("users", config).then(res => {
-          console.log("got users:", res.data.users);
-          dispatch(loadUsers(res.data.users));
-        });
+        loadUserList();
       }
     } else {
       history.push("/login");
@@ -82,13 +97,13 @@ export default function Dashboard() {
   function onEditTrip(tripId) {
     const trip = trips.list.find(trip => trip._id === tripId);
     setSelectedTrip(trip);
-    handleShowEdit();
+    handleShowEditTrip();
   }
 
   function onDeletePopup(tripId) {
     const trip = trips.list.find(trip => trip._id === tripId);
     setSelectedTrip(trip);
-    handleShowDelete();
+    handleShowDeleteTrip();
   }
 
   function onDeleteTrip() {
@@ -103,55 +118,128 @@ export default function Dashboard() {
       config
     ).then(() => {
       loadTrips();
-      handleCloseDelete();
+      handleCloseDeleteTrip();
     });
   }
-  function onUserDetails(userId) {
-    console.log("edit user:", userId);
+  function onEditUserDialog(userId) {
+    const tempUser = userList.find(user => user._id === userId);
+    setSelectedUser(tempUser);
+    handleShowEditUser();
   }
 
-  function onDeleteUser(userId) {
-    console.log("delete user:", userId);
+  function onEditUser(password, role) {
+    const requestPayload = { role };
+    if (password) {
+      requestPayload.password = password;
+    }
+    let config = {
+      headers: {
+        "x-access-token": localStorage.getItem("accessToken")
+      }
+    };
+    API.put(`users/${selectedUser._id}`, qs.stringify(requestPayload), config)
+      .then(() => {
+        console.log("user saved");
+        loadUserList();
+        handleCloseEditUser();
+        setSelectedUser(null);
+      })
+      .catch(err => {
+        console.log("Error deleting user");
+      });
+  }
+
+  function onDeleteUser() {
+    let config = {
+      headers: {
+        "x-access-token": localStorage.getItem("accessToken")
+      }
+    };
+    API.delete(`users/${selectedUser._id}`, config)
+      .then(() => {
+        console.log("user deleted");
+        loadUserList();
+        handleCloseEditUser();
+        setSelectedUser(null);
+      })
+      .catch(err => {
+        console.log("Error deleting user");
+      });
+  }
+
+  function manageTripsByAdmin(userId) {
+    const tempUser = userList.find(user => user._id === userId);
+    dispatch(setCurrentUser(tempUser));
+    history.push("/manage");
   }
   return (
     <>
-      <Modal show={showEdit} onHide={handleCloseEdit} style={{ opacity: 1 }}>
+      <Modal
+        show={showEditTrip}
+        onHide={handleCloseEditTrip}
+        style={{ opacity: 1 }}
+      >
         <Modal.Body>
           <EditTrip
             user={user}
             trip={selectedTrip}
-            onClose={handleCloseEdit}
+            onClose={handleCloseEditTrip}
             refresh={loadTrips}
           />
         </Modal.Body>
       </Modal>
       <Modal
-        show={showDelete}
-        onHide={handleCloseDelete}
+        show={showDeleteTrip}
+        onHide={handleCloseDeleteTrip}
         style={{ opacity: 1 }}
       >
         <Modal.Header closeButton>
           <Modal.Title>Are you sure you want to remove this trip?</Modal.Title>
         </Modal.Header>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseDelete}>
+          <Button variant="secondary" onClick={handleCloseDeleteTrip}>
             Close
           </Button>
           <Button
             variant="danger"
             onClick={() => {
               onDeleteTrip();
-              handleCloseDelete();
+              handleCloseDeleteTrip();
             }}
           >
             Remve trip
           </Button>
         </Modal.Footer>
       </Modal>
+      <Modal
+        show={showEditUser}
+        onHide={handleCloseEditUser}
+        style={{ opacity: 1 }}
+      >
+        <Modal.Body>
+          <EditProfile
+            role={user.profile.role}
+            user={selectedUser}
+            passwordError={false}
+            passwordSuccess={false}
+            deleteUser={onDeleteUser}
+            changePassword={() => {}}
+            editProfile={onEditUser}
+          />
+        </Modal.Body>
+      </Modal>
       {filteredTrips.length > 0 &&
         (user.profile.role === "basic" ? (
           <>
-            <button onClick={() => setDaysFilter(2)}>Click</button>
+            <div className={styles.filterContainer}>
+              <h5 className={styles.label}>Show trips for the next </h5>
+              <input
+                type="text"
+                value={daysFilter}
+                placeholder="days"
+                onChange={ev => setDaysFilter(ev.target.value)}
+              />
+            </div>
             <TripsTable
               trips={filteredTrips}
               onEditTrip={onEditTrip}
@@ -159,11 +247,14 @@ export default function Dashboard() {
             />
           </>
         ) : (
-          <UsersTable
-            users={userList}
-            onUserDetails={onUserDetails}
-            onDeleteUser={onDeleteUser}
-          />
+          <>
+            <UsersTable
+              role={user.profile.role}
+              users={userList}
+              onUserDetails={onEditUserDialog}
+              onManageUserTrips={manageTripsByAdmin}
+            />
+          </>
         ))}
       {trips.list.length === 0 && <h4>You haven't added any trips yet!</h4>}
     </>

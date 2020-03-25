@@ -7,18 +7,23 @@ export default function EditProfile(props) {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatNewPassword, setRepeatNewPassword] = useState("");
+  const [userRole, setUserRole] = useState(props.user?.role ?? "basic");
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   function submitForm(ev) {
     ev.preventDefault();
-    if (newPassword !== "") {
-      // change password flow
-      props.changePassword(oldPassword, newPassword);
-      setOldPassword("");
-      setNewPassword("");
-      setRepeatNewPassword("");
-    }
+    // change password flow
+    props.changePassword(oldPassword, newPassword);
+    setOldPassword("");
+    setNewPassword("");
+    setRepeatNewPassword("");
+  }
+  function submitSupervisorForm(ev) {
+    ev.preventDefault();
+    props.editProfile(newPassword, userRole);
+    setNewPassword("");
+    setRepeatNewPassword("");
   }
   function validateForm() {
     if (oldPassword === "") return false;
@@ -95,28 +100,40 @@ export default function EditProfile(props) {
   const supervisorUserView = (
     <>
       <h4 className={styles.spacer}>Change password</h4>
-      <form onSubmit={submitForm}>
+      <form onSubmit={submitSupervisorForm}>
         <div className="form-group">
           <label htmlFor="newPasswordInput">New password</label>
           <input
-            type="email"
+            value={newPassword}
+            onChange={ev => setNewPassword(ev.target.value)}
+            type="password"
             className="form-control"
             id="newPasswordInput"
             placeholder="new password"
           />
         </div>
         <div className="form-group">
+          <label htmlFor="newPasswordRepeatInput">Repeat new password</label>
+          <input
+            value={repeatNewPassword}
+            onChange={ev => setRepeatNewPassword(ev.target.value)}
+            type="password"
+            className="form-control"
+            id="newPasswordRepeatInput"
+            placeholder="repeat new password"
+          />
+        </div>
+        <div className="form-group">
           <label htmlFor="roleSelect">Select role</label>
-          <select className="form-control" id="roleSelect">
-            <option selected={props.user.profile.role === "basic"}>
-              basic
-            </option>
-            <option selected={props.user.profile.role === "supervisor"}>
-              supervisor
-            </option>
-            <option selected={props.user.profile.role === "admin"}>
-              admin
-            </option>
+          <select
+            className="form-control"
+            id="roleSelect"
+            value={userRole}
+            onChange={ev => setUserRole(ev.target.value)}
+          >
+            <option>basic</option>
+            <option>supervisor</option>
+            <option>admin</option>
           </select>
         </div>
         <div className={styles.spacer}>

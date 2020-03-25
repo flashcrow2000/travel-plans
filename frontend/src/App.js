@@ -10,6 +10,7 @@ import Users from "./components/Users/component";
 import Dashboard from "./components/Dashboard/component";
 import NewTrip from "./components/NewTrip/component";
 import Profile from "./components/Profile/component";
+import Manage from "./components/Manage/component";
 
 function App() {
   const user = useSelector(selectUser);
@@ -34,6 +35,7 @@ function App() {
         <Route path="/dashboard" exact component={Dashboard} />
         <Route path="/new-trip" exact component={NewTrip} />
         <Route path="/profile" exact component={Profile} />
+        <Route path="/manage" exact component={Manage} />
         {/* TODO add 404 page */}
       </Switch>
     </div>

@@ -43,7 +43,7 @@ export default function Profile() {
       }
     };
     API.delete(`users/${user.profile.id}`, config)
-      .then(res => {
+      .then(() => {
         logout();
       })
       .catch(err => {
@@ -55,7 +55,7 @@ export default function Profile() {
       <h2>Profile</h2>
       <EditProfile
         role={"basic"}
-        user={user}
+        user={user.profile}
         passwordError={pwdError}
         passwordSuccess={pwdSuccess}
         deleteUser={deleteUserAccount}

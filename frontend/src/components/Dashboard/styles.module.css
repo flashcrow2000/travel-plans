@@ -1,0 +1,10 @@
+.filterContainer {
+  display: flex;
+  justify-content: flex-end;
+  width: 80%;
+  margin: 16px 0;
+}
+
+.label {
+  margin-right: 8px;
+}

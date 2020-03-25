@@ -187,12 +187,12 @@ exports.deleteUser = async (req, res, next) => {
       user.role === "supervisor"
     ) {
       await User.findByIdAndDelete(deleteUserId);
-      res.status(200).json({
+      return res.status(200).json({
         data: null,
         message: "User has been deleted"
       });
     } else {
-      res.status(401).json({
+      return res.status(401).json({
         error: "You don't have enough permission to perform this action"
       });
     }

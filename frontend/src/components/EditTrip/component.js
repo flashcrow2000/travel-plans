@@ -10,6 +10,7 @@ export default function EditTrip(props) {
   const [comment, setComment] = useState(props.trip.comment);
   const [startDate, setStartDate] = useState(new Date(props.trip.startDate));
   const [endDate, setEndDate] = useState(new Date(props.trip.endDate));
+  const userId = props.user.profile?.id ?? props.user._id;
   function submitForm(ev) {
     ev.preventDefault();
     const requestBody = { destination, startDate, endDate, comment };
@@ -19,7 +20,7 @@ export default function EditTrip(props) {
       }
     };
     API.put(
-      `users/${props.user.profile.id}/trips/${props.trip._id}`,
+      `users/${userId}/trips/${props.trip._id}`,
       qs.stringify(requestBody),
       config
     )
