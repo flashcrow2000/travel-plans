@@ -151,3 +151,11 @@ exports.deleteTripForUser = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.deleteAllUserTrips = async owner => {
+  try {
+    await Trip.deleteMany({ owner });
+  } catch (error) {
+    console.log("Error removing trips for user:", owner);
+  }
+};

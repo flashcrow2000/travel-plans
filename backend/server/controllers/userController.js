@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const tripController = require("../controllers/tripController");
 
 const { roles } = require("../roles");
 
@@ -178,15 +179,13 @@ exports.deleteUser = async (req, res, next) => {
   try {
     const user = res.locals.loggedInUser;
     const deleteUserId = req.params.userId;
-    console.log(user._id.toString());
-    console.log(deleteUserId);
-    console.log(user.role);
     if (
       user._id.toString() === deleteUserId ||
       user.role === "admin" ||
       user.role === "supervisor"
     ) {
       await User.findByIdAndDelete(deleteUserId);
+      tripController.deleteAllUserTrips(deleteUserId);
       return res.status(200).json({
         data: null,
         message: "User has been deleted"
