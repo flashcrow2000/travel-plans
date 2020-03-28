@@ -2,3 +2,22 @@
   margin: 64px;
   max-width: 480px;
 }
+
+.page {
+  display: flex;
+  justify-content: center;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.dates {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.addBtn {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -15,15 +15,15 @@ const app = express();
 app.use(cors());
 
 const PORT = process.env.PORT || 7000;
+let MONGO_URL =
+  process.env.NODE_ENV === "PROD"
+    ? process.env.MONGO_URL_PROD
+    : process.env.MONGO_URL_TEST;
 
-mongoose
-  .connect(
-    "mongodb+srv://myTestUser:9UvVXSvDQmDzOFSR@mymongotestcluster-7mshb.mongodb.net/test?retryWrites=true&w=majority",
-    { useNewUrlParser: true }
-  )
-  .then(() => {
-    console.log("Connected to the Database successfully");
-  });
+console.log("connect to ", MONGO_URL);
+mongoose.connect(MONGO_URL, { useNewUrlParser: true }).then(() => {
+  console.log("Connected to the Database successfully");
+});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -60,3 +60,5 @@ app.get("/test", function(req, res) {
 app.listen(PORT, () => {
   console.log("Server is listening on Port:", PORT);
 });
+
+module.exports = app;

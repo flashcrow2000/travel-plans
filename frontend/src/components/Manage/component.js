@@ -112,7 +112,7 @@ export default function Manage() {
                 handleCloseDeleteTrip();
               }}
             >
-              Remve trip
+              Remove trip
             </Button>
           </Modal.Footer>
         </Modal>

@@ -4,6 +4,8 @@ import { selectUser, logoutUser } from "../../reducers/userSlice";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { setCurrentUser } from "../../reducers/manageSlice";
+import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
+import styles from "./Header.module.css";
 
 export function Header() {
   const user = useSelector(selectUser);
@@ -15,16 +17,10 @@ export function Header() {
   }
 
   const loggedInContent = (
-    <ul className="nav pull-xs-right">
+    <ul className="navbar-nav mr-auto">
       <li className="nav-item">
         <Link to="/Dashboard" className="nav-link">
           Dashboard
-        </Link>
-      </li>
-
-      <li className="nav-item">
-        <Link to="/new-trip" className="nav-link" onClick={cleanupSelectedUser}>
-          New trip
         </Link>
       </li>
 
@@ -37,7 +33,7 @@ export function Header() {
   );
 
   const loggedOutContent = (
-    <ul className="nav pull-xs-right">
+    <ul className="navbar-nav mr-auto">
       <li className="nav-item">
         <Link to="/login" className="nav-link">
           Log in
@@ -53,9 +49,19 @@ export function Header() {
   );
 
   return (
-    <nav className="navbar navbar-light">
-      <div className="container" style={{ flexDirection: "row-reverse" }}>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">
+        travelR
+      </a>
+      <div className={styles.menu} id="navbarNav">
         {user.loggedIn ? loggedInContent : loggedOutContent}
+        {user.loggedIn && (
+          <span class="navbar-text">
+            <button>
+              <CancelOutlinedIcon onClick={() => dispatch(logoutUser())} />
+            </button>
+          </span>
+        )}
       </div>
     </nav>
   );

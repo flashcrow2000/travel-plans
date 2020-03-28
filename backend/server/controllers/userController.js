@@ -137,8 +137,6 @@ exports.updateUser = async (req, res, next) => {
           return res.status(401).json({
             error: "Old password doesn't match"
           });
-
-        console.log("before hash:", req.body.newPassword);
         const hashedPassword = await hashPassword(req.body.newPassword);
         updatePaylod = { password: hashedPassword };
       } else {

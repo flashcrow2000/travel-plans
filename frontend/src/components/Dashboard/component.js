@@ -25,6 +25,7 @@ import styles from "./styles.module.css";
 import EditProfile from "../EditProfIle/component";
 import qs from "qs";
 import PrintOutcome from "../PrintOutcome/component";
+import FilterListTwoToneIcon from "@material-ui/icons/FilterListTwoTone";
 
 export default function Dashboard() {
   const user = useSelector(selectUser);
@@ -34,22 +35,25 @@ export default function Dashboard() {
   const userList = useSelector(selectUsers);
   const history = useHistory();
   const dispatch = useDispatch();
+  const componentRef = useRef();
+
   const [tripsNext30Days, setTripsNext30Days] = useState([]);
   const [selectedTrip, setSelectedTrip] = useState(undefined);
   const [showEditTrip, setShowEditTrip] = useState(false);
-  const handleCloseEditTrip = () => setShowEditTrip(false);
-  const handleShowEditTrip = () => setShowEditTrip(true);
   const [showDeleteTrip, setShowDeleteTrip] = useState(false);
-  const handleCloseDeleteTrip = () => setShowDeleteTrip(false);
-  const handleShowDeleteTrip = () => setShowDeleteTrip(true);
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [showEditUser, setShowEditUser] = useState(false);
-  const handleCloseEditUser = () => setShowEditUser(false);
-  const handleShowEditUser = () => setShowEditUser(true);
-  const componentRef = useRef();
   const [destinationFilter, setDestinationFilter] = useState("");
   const [startDateFilter, setStartDateFilter] = useState("");
   const [endDateFilter, setEndDateFilter] = useState("");
+  const [filterVisible, setFilterVisible] = useState(false);
+
+  const handleCloseEditTrip = () => setShowEditTrip(false);
+  const handleShowEditTrip = () => setShowEditTrip(true);
+  const handleCloseDeleteTrip = () => setShowDeleteTrip(false);
+  const handleShowDeleteTrip = () => setShowDeleteTrip(true);
+  const handleCloseEditUser = () => setShowEditUser(false);
+  const handleShowEditUser = () => setShowEditUser(true);
 
   function loadTrips() {
     let config = {
@@ -208,6 +212,79 @@ export default function Dashboard() {
     dispatch(filteredTrips(filteredResult));
   }, [destinationFilter, startDateFilter, endDateFilter]);
 
+  const noTripsContent = (
+    <>
+      <div className={styles.noTrips}>
+        <h4>You haven't added any trips!</h4>
+        <div className="table-data__tool-right">
+          <button
+            onClick={() => history.push("/new-trip")}
+            className="au-btn au-btn-icon au-btn--green au-btn--small"
+          >
+            add trip
+          </button>
+        </div>
+      </div>
+    </>
+  );
+
+  const filtersContent = (
+    <div className="table-data__tool">
+      <div>
+        <div className="table-data__tool-left">
+          <button
+            className="au-btn-filter"
+            onClick={() => setFilterVisible(!filterVisible)}
+          >
+            <FilterListTwoToneIcon />
+            filters
+          </button>
+        </div>
+        <div>
+          <div>
+            <div
+              style={{ display: filterVisible ? "flex" : "none" }}
+              className={styles.filterContainer}
+            >
+              <input
+                type="text"
+                value={destinationFilter}
+                style={{ marginRight: "8px" }}
+                className="form-control"
+                placeholder="Destination"
+                onChange={ev => setDestinationFilter(ev.target.value)}
+              />
+              <input
+                type="text"
+                value={startDateFilter}
+                style={{ marginRight: "8px" }}
+                className="form-control"
+                placeholder="Start date"
+                onChange={ev => setStartDateFilter(ev.target.value)}
+              />
+              <input
+                type="text"
+                value={endDateFilter}
+                style={{ marginRight: "8px" }}
+                className="form-control"
+                placeholder="End date"
+                onChange={ev => setEndDateFilter(ev.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="table-data__tool-right">
+        <button
+          className="au-btn au-btn-icon au-btn--green au-btn--small"
+          onClick={() => history.push("/new-trip")}
+        >
+          add trip
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <Modal
@@ -243,7 +320,7 @@ export default function Dashboard() {
               handleCloseDeleteTrip();
             }}
           >
-            Remve trip
+            Remove trip
           </Button>
         </Modal.Footer>
       </Modal>
@@ -264,74 +341,64 @@ export default function Dashboard() {
           />
         </Modal.Body>
       </Modal>
-      {user.profile.role === "basic" ? (
-        <>
-          {trips.list.length > 0 && (
-            <div>
-              <h5 className={styles.filterContainer}>Filtering options</h5>
-              <div className={styles.filterContainer}>
-                <input
-                  type="text"
-                  value={destinationFilter}
-                  placeholder="Destination"
-                  onChange={ev => setDestinationFilter(ev.target.value)}
+      <div className={styles.header}>
+        <h2>
+          {user.profile.role === "basic"
+            ? "Where do you want to go next?"
+            : "Welcome back!"}
+        </h2>
+      </div>
+      <div className={styles.container}>
+        <div>
+          {user.profile.role === "basic" ? (
+            <>
+              {trips.list.length === 0 && noTripsContent}
+              {trips.list.length > 0 && filtersContent}
+              {trips.list.length > 0 && filteredTripsList.length > 0 ? (
+                <TripsTable
+                  trips={filteredTripsList}
+                  onEditTrip={onEditTrip}
+                  onDeleteTrip={onDeletePopup}
                 />
-                <input
-                  type="text"
-                  value={startDateFilter}
-                  placeholder="Start date"
-                  onChange={ev => setStartDateFilter(ev.target.value)}
-                />
-                <input
-                  type="text"
-                  value={endDateFilter}
-                  placeholder="End date"
-                  onChange={ev => setEndDateFilter(ev.target.value)}
-                />
+              ) : (
+                trips.list.length > 0 && <h3>No trips match your filters!</h3>
+              )}
+              {tripsNext30Days.length > 0 && (
+                <div className={styles.print}>
+                  <ReactToPrint
+                    trigger={() => (
+                      <button className="btn btn-primary">
+                        Print 30 days schedule!
+                      </button>
+                    )}
+                    content={() => componentRef.current}
+                  />
+                </div>
+              )}
+              <div style={{ display: "none" }}>
+                <PrintOutcome ref={componentRef} trips={tripsNext30Days} />
               </div>
-            </div>
-          )}
-          {filteredTripsList.length > 0 ? (
-            <TripsTable
-              trips={filteredTripsList}
-              onEditTrip={onEditTrip}
-              onDeleteTrip={onDeletePopup}
-            />
+            </>
           ) : (
-            <h3>No trips match your filters!</h3>
-          )}
-          {tripsNext30Days.length > 0 && (
-            <div>
-              <ReactToPrint
-                trigger={() => (
-                  <button className="btn btn-primary">
-                    Print 30 days schedule!
-                  </button>
-                )}
-                content={() => componentRef.current}
+            <>
+              <UsersTable
+                owner={user.profile}
+                users={userList}
+                onUserDetails={onEditUserDialog}
+                onManageUserTrips={manageTripsByAdmin}
               />
-            </div>
+              <div>
+                <button
+                  className="btn btn-primary"
+                  onClick={addUserBySupervisor}
+                >
+                  Add user
+                </button>
+              </div>
+            </>
           )}
-          <div style={{ display: "none" }}>
-            <PrintOutcome ref={componentRef} trips={tripsNext30Days} />
-          </div>
-        </>
-      ) : (
-        <>
-          <UsersTable
-            owner={user.profile}
-            users={userList}
-            onUserDetails={onEditUserDialog}
-            onManageUserTrips={manageTripsByAdmin}
-          />
-          <div>
-            <button className="btn btn-primary" onClick={addUserBySupervisor}>
-              Add user
-            </button>
-          </div>
-        </>
-      )}
-      {trips.list.length === 0 && <h4>You haven't added any trips yet!</h4>}
+        </div>
+      </div>
     </>
   );
 }

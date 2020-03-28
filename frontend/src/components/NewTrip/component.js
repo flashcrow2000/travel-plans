@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../../reducers/userSlice";
 import { useHistory } from "react-router-dom";
 import { selectCurrentUser } from "../../reducers/manageSlice";
+import { Divider } from "@material-ui/core";
 
 export default function NewTrip() {
   const user = useSelector(selectUser);
@@ -44,60 +45,72 @@ export default function NewTrip() {
   }
   return (
     <>
-      <div className={styles.container}>
-        {selectedUser ? (
-          <h2>Add a trip for ${selectedUser.email}</h2>
-        ) : (
-          <h2>Where do you want to go?</h2>
-        )}
-        <form onSubmit={submitForm}>
-          <fieldset>
-            <fieldset className="form-group">
-              <input
-                className="form-control form-control-lg"
-                type="text"
-                placeholder="Destination"
-                value={destination}
-                onChange={ev => setDestination(ev.target.value)}
-              />
+      <div className={styles.page}>
+        <div className={styles.container}>
+          {selectedUser ? (
+            <h2 className={styles.header}>
+              Add a trip for ${selectedUser.email}
+            </h2>
+          ) : (
+            <h2 className={styles.header}>Where do you want to go?</h2>
+          )}
+          <form onSubmit={submitForm}>
+            <fieldset>
+              <fieldset className="form-group">
+                <input
+                  className="form-control form-control-lg"
+                  type="text"
+                  placeholder="Destination"
+                  value={destination}
+                  onChange={ev => setDestination(ev.target.value)}
+                />
+              </fieldset>
+              <fieldset className="form-group" style={{ marginTop: "16px" }}>
+                <input
+                  className="form-control form-control-lg"
+                  type="text"
+                  placeholder="Comment"
+                  value={comment}
+                  onChange={ev => setComment(ev.target.value)}
+                />
+              </fieldset>
+              <div className={styles.dates}>
+                <div>
+                  <label htmlFor="startDate">Start date</label>
+                  <br />
+                  <DatePicker
+                    id="startDate"
+                    selected={startDate}
+                    onChange={date => {
+                      setStartDate(date);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="endDate">End date</label>
+                  <br />
+                  <DatePicker
+                    id="endDate"
+                    selected={endDate}
+                    onChange={date => {
+                      setEndDate(date);
+                    }}
+                  />
+                </div>
+              </div>
+              <Divider style={{ margin: "16px 0" }} />
+              <div className={styles.addBtn}>
+                <button
+                  className="btn btn-primary"
+                  type="submit"
+                  disabled={!validateForm()}
+                >
+                  Add trip
+                </button>
+              </div>
             </fieldset>
-            <label htmlFor="startDate">Start date</label>
-            <br />
-            <DatePicker
-              id="startDate"
-              selected={startDate}
-              onChange={date => {
-                setStartDate(date);
-              }}
-            />
-            <br />
-            <label htmlFor="endDate">End date</label>
-            <br />
-            <DatePicker
-              id="endDate"
-              selected={endDate}
-              onChange={date => {
-                setEndDate(date);
-              }}
-            />
-            <fieldset className="form-group" style={{ marginTop: "16px" }}>
-              <input
-                className="form-control form-control-lg"
-                type="text"
-                placeholder="Comment"
-                value={comment}
-                onChange={ev => setComment(ev.target.value)}
-              />
-            </fieldset>
-            <button
-              className="btn btn-lg btn-primary center"
-              type="submit"
-              disabled={!validateForm()}
-            >
-              Add trip
-            </button>
-          </fieldset>
-        </form>
+          </form>
+        </div>
       </div>
     </>
   );

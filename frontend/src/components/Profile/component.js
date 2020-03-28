@@ -52,20 +52,18 @@ export default function Profile() {
   }
   return (
     <>
-      <h2>Profile</h2>
-      <EditProfile
-        role={"basic"}
-        user={user.profile}
-        passwordError={pwdError}
-        passwordSuccess={pwdSuccess}
-        deleteUser={deleteUserAccount}
-        changePassword={changePassword}
-      />
-      <div style={{ marginLeft: "48px" }}>
-        <h4 style={{ margin: "32px 0" }}>Logout</h4>
-        <button onClick={logout} className="btn btn-primary">
-          Logout
-        </button>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div>
+          <h2 style={{ textAlign: "center", marginTop: "32px" }}>Profile</h2>
+          <EditProfile
+            role={"basic"}
+            user={user.profile}
+            passwordError={pwdError}
+            passwordSuccess={pwdSuccess}
+            deleteUser={deleteUserAccount}
+            changePassword={changePassword}
+          />
+        </div>
       </div>
     </>
   );

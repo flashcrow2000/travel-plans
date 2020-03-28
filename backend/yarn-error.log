@@ -1,0 +1,60 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\yarn\bin\yarn.js
+
+PATH: 
+  C:\Program Files\ConEmu\ConEmu\Scripts;C:\Program Files\ConEmu\ConEmu\Scripts;C:\Program Files\ConEmu;C:\Program Files\ConEmu\ConEmu;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\Docker\Docker\Resources\bin;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\iCLS\;C:\Program Files\Intel\Intel(R) Management Engine Components\iCLS\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Users\Dudix\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files\Git\cmd;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\sbt\bin;C:\ffmpeg\bin;C:\work\py\Scripts\;C:\work\py\;C:\Users\Dudix\AppData\Local\Microsoft\WindowsApps;C:\ProgramData\Microsoft VS Code\bin;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2019.1.1\bin;c:\Program Files\Java\jdk-12.0.1\\bin
+
+Yarn version: 
+  1.13.0
+
+Node version: 
+  10.15.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'C:\work\other\toptal\travel-plans\backend\node_modules\bcrypt\lib\binding\bcrypt_lib.node'
+
+npm manifest: 
+  {
+    "name": "server",
+    "version": "1.0.0",
+    "description": "Server for the travel plans app",
+    "main": "server/server.js",
+    "scripts": {
+      "start": "node server/server.js",
+      "test": "mocha"
+    },
+    "author": "Cosmin Simon",
+    "license": "ISC",
+    "jest": {
+      "testEnvironment": "node",
+      "coveragePathIgnorePatterns": [
+        "/node_modules/"
+      ]
+    },
+    "dependencies": {
+      "accesscontrol": "^2.2.1",
+      "bcrypt": "^3.0.6",
+      "body-parser": "^1.19.0",
+      "cors": "^2.8.5",
+      "dotenv": "^8.0.0",
+      "express": "^4.17.1",
+      "jsonwebtoken": "^8.5.1",
+      "mongoose": "^5.6.9"
+    },
+    "devDependencies": {
+      "chai": "^4.2.0",
+      "chai-http": "^4.3.0",
+      "mocha": "^7.1.1",
+      "superagent": "^5.2.2",
+      "supertest": "^4.0.2"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
