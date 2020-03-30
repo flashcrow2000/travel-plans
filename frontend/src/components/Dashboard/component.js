@@ -189,6 +189,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     let filteredResult = [...trips.list];
+    if (!filterVisible) {
+      dispatch(filteredTrips(filteredResult));
+      return;
+    }
     if (destinationFilter) {
       filteredResult = filteredResult.filter(
         trip =>
@@ -210,7 +214,7 @@ export default function Dashboard() {
       });
     }
     dispatch(filteredTrips(filteredResult));
-  }, [destinationFilter, startDateFilter, endDateFilter]);
+  }, [filterVisible, destinationFilter, startDateFilter, endDateFilter]);
 
   const noTripsContent = (
     <>
@@ -229,15 +233,22 @@ export default function Dashboard() {
   );
 
   const filtersContent = (
-    <div className="table-data__tool">
+    <div style={{ marginBottom: "12px" }}>
       <div>
-        <div className="table-data__tool-left">
+        <div className={styles.buttonContainer}>
           <button
             className="au-btn-filter"
+            style={{ border: "1px solid lightgrey" }}
             onClick={() => setFilterVisible(!filterVisible)}
           >
             <FilterListTwoToneIcon />
             filters
+          </button>
+          <button
+            className="au-btn au-btn-icon au-btn--green au-btn--small"
+            onClick={() => history.push("/new-trip")}
+          >
+            add trip
           </button>
         </div>
         <div>
@@ -273,14 +284,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </div>
-      <div className="table-data__tool-right">
-        <button
-          className="au-btn au-btn-icon au-btn--green au-btn--small"
-          onClick={() => history.push("/new-trip")}
-        >
-          add trip
-        </button>
       </div>
     </div>
   );

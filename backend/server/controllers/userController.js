@@ -123,11 +123,7 @@ exports.updateUser = async (req, res, next) => {
     const updateUserId = req.params.userId;
     let updatePaylod = {};
     if (user._id.toString() === updateUserId) {
-      if (
-        user.role === "basic" &&
-        req.body.newPassword &&
-        req.body.oldPassword
-      ) {
+      if (req.body.newPassword && req.body.oldPassword) {
         const userBeforeUpdate = await User.findById(updateUserId);
         const validPassword = await validatePassword(
           req.body.oldPassword,

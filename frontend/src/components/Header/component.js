@@ -4,7 +4,7 @@ import { selectUser, logoutUser } from "../../reducers/userSlice";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { setCurrentUser } from "../../reducers/manageSlice";
-import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import styles from "./Header.module.css";
 
 export function Header() {
@@ -49,7 +49,7 @@ export function Header() {
   );
 
   return (
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-sm navbar-light bg-light">
       <a class="navbar-brand" href="#">
         travelR
       </a>
@@ -58,7 +58,7 @@ export function Header() {
         {user.loggedIn && (
           <span class="navbar-text">
             <button>
-              <CancelOutlinedIcon onClick={() => dispatch(logoutUser())} />
+              <ExitToAppIcon onClick={() => dispatch(logoutUser())} />
             </button>
           </span>
         )}

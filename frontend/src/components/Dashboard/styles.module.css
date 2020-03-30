@@ -30,3 +30,8 @@
   display: flex;
   justify-content: flex-end;
 }
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+}

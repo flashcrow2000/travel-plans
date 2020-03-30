@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -20,13 +21,12 @@ export const Login = () => {
     const requestBody = { email, password };
     API.post("login", qs.stringify(requestBody))
       .then(res => {
-        console.log("logged in:", res);
         dispatch(loginUser(res.data));
         localStorage.setItem("accessToken", res.data.accessToken);
         localStorage.setItem("userId", res.data.data.id);
         history.push("/dashboard");
       })
-      .catch(err => console.log(err));
+      .catch(err => setError(true));
     // setEmail("");
     // setPassword("");
   }
@@ -61,6 +61,12 @@ export const Login = () => {
                       onChange={ev => setPassword(ev.target.value)}
                     />
                   </fieldset>
+
+                  {error && (
+                    <h5 style={{ color: "red" }}>
+                      Email and passowrd combination do not match!
+                    </h5>
+                  )}
 
                   <button
                     className="btn btn-lg btn-primary pull-xs-right"

@@ -1,17 +1,18 @@
 import { Link, useHistory } from "react-router-dom";
 import API from "../../api/api";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import qs from "qs";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../reducers/userSlice";
 import { loadUsers } from "../../reducers/manageSlice";
 
-export const Signup = () => {
+export const Signup = props => {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+  const [role, setUserRole] = useState("basic");
   const history = useHistory();
   function loadUserList() {
     let config = {
@@ -25,7 +26,7 @@ export const Signup = () => {
   }
   function submitForm(ev) {
     ev.preventDefault();
-    const requestBody = { email, password };
+    const requestBody = { email, password, role };
     API.post("signup", qs.stringify(requestBody))
       .then(res => {
         console.log(res);
@@ -104,6 +105,22 @@ export const Signup = () => {
                     onChange={ev => setRepeatPassword(ev.target.value)}
                   />
                 </fieldset>
+
+                {props.location.search.indexOf("advanced") > -1 && (
+                  <fieldset className="form-group">
+                    <label htmlFor="roleSelect">Select role</label>
+                    <select
+                      className="form-control"
+                      id="roleSelect"
+                      value={role}
+                      onChange={ev => setUserRole(ev.target.value)}
+                    >
+                      <option>basic</option>
+                      <option>supervisor</option>
+                      <option>admin</option>
+                    </select>
+                  </fieldset>
+                )}
 
                 <button
                   className="btn btn-lg btn-primary pull-xs-right"

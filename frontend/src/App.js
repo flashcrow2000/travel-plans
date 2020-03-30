@@ -30,7 +30,7 @@ function App() {
           )}
         </Route>
         <Route path="/login" exact component={Login} />
-        <Route path="/signup" exact component={Signup} />
+        <Route path="/signup/:advanced?" exact component={Signup} />
         <ProtectedRoute
           isAllowed={userLoggedIn}
           path="/dashboard"

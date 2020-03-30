@@ -63,7 +63,6 @@ exports.validateAction = async (req, res, next) => {
 exports.getAllTripsForUser = async (req, res, next) => {
   try {
     const user = res.locals.loggedInUser;
-    console.log(user.role);
     if (user.role !== "admin" && user._id.toString() !== req.params.userId) {
       return res.status(401).json({
         error: "You don't have enough permission to perform this action"
@@ -90,7 +89,6 @@ exports.addTripForUser = async (req, res, next) => {
       });
     }
     const { destination, startDate, endDate, comment } = req.body;
-    console.log(req.params.userId);
     const newTrip = new Trip({
       destination,
       startDate,
@@ -98,9 +96,10 @@ exports.addTripForUser = async (req, res, next) => {
       comment,
       owner: req.params.userId
     });
-    await newTrip.save();
+    const trip = await newTrip.save();
     res.json({
-      message: "Trip added successfully"
+      message: "Trip added successfully",
+      trip
     });
   } catch (error) {
     next(error);
