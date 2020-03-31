@@ -392,7 +392,7 @@ export default function Dashboard() {
               />
               <div>
                 <button
-                  className="btn btn-primary"
+                  className="au-btn au-btn-icon au-btn--green au-btn--small"
                   onClick={addUserBySupervisor}
                 >
                   Add user

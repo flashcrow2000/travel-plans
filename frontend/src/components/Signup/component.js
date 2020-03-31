@@ -13,6 +13,7 @@ export const Signup = props => {
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [role, setUserRole] = useState("basic");
+  const [errorVisible, setErrorVisible] = useState(false);
   const history = useHistory();
   function loadUserList() {
     let config = {
@@ -39,6 +40,7 @@ export const Signup = props => {
       })
       .catch(error => {
         if (error.response?.status === 403) {
+          setErrorVisible(true);
           console.log("Show Log in message. Ask for forgot password");
         }
       });
@@ -48,12 +50,14 @@ export const Signup = props => {
   }
 
   function validateForm() {
+    console.log("validate");
     if (email === "" || password === "") {
       return false;
     }
-    if (password !== repeatPassword) {
+    if (password != repeatPassword) {
       return false;
     }
+    return true;
   }
 
   return (
@@ -121,11 +125,18 @@ export const Signup = props => {
                     </select>
                   </fieldset>
                 )}
-
+                {errorVisible && (
+                  <h5 style={{ color: "red" }}>
+                    That email is already registered. Try signing in!
+                  </h5>
+                )}
+                {!validateForm() && email !== "" && password !== "" && (
+                  <p style={{ color: "red" }}>Passwords do not match!</p>
+                )}
                 <button
                   className="btn btn-lg btn-primary pull-xs-right"
                   type="submit"
-                  disabled={!validateForm}
+                  disabled={!validateForm()}
                 >
                   Sign up
                 </button>

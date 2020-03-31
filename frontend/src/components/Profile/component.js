@@ -21,7 +21,8 @@ export default function Profile() {
     history.push("/");
   }
   function changePassword(oldPassword, newPassword) {
-    console.log(oldPassword, newPassword);
+    setPwdError(false);
+    setPwdSuccess(false);
     let config = {
       headers: {
         "x-access-token": localStorage.getItem("accessToken")

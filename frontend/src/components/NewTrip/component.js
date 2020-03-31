@@ -83,6 +83,7 @@ export default function NewTrip() {
                     selected={startDate}
                     onChange={date => {
                       setStartDate(date);
+                      setEndDate(date);
                     }}
                   />
                 </div>
@@ -92,6 +93,7 @@ export default function NewTrip() {
                   <DatePicker
                     id="endDate"
                     selected={endDate}
+                    minDate={startDate}
                     onChange={date => {
                       setEndDate(date);
                     }}
