@@ -22,14 +22,17 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "react-to-print": "^2.6.3",
-    "typeface-roboto": "^0.0.75"
+    "typeface-roboto": "^0.0.75",
+    "@snyk/protect": "latest"
   },
   "scripts": {
     "start": "set PORT=3355 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "cypress": "cypress open",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prepare": "yarn run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -48,5 +51,6 @@
   },
   "devDependencies": {
     "cypress": "^4.2.0"
-  }
+  },
+  "snyk": true
 }
